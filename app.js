@@ -1488,8 +1488,7 @@ function showToast(msg,ms=3000){
 async function init(){
   initSupabase();
   if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
-  document.getElementById('landing').classList.add('hidden');
-  document.getElementById('app').classList.remove('hidden');
+  // no landing page — app is always shown
   if(sb){
     try{
       const {data:{session}}=await sb.auth.getSession();
