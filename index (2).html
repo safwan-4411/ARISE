@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="theme-color" content="#080C14"/>
+<title>ARISE — Daily Journal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=Lora:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icon.svg"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="ARISE"/>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300D4FF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='13 2 3 14 12 14 11 22 21 10 12 10 13 2'/%3E%3C/svg%3E"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="supabase-config.js"></script>
+</head>
+<body>
+
+<!-- ============ APP SHELL ============ -->
+<div id="app" class="view">
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          <span class="brand-name">ARI<span class="brand-accent">SE</span></span>
+        </div>
+        <nav class="main-nav" id="main-nav"></nav>
+      </div>
+      <div class="header-right">
+        <div class="xp-pill" id="xp-pill" style="display:none">
+          <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span id="xp-text">LVL 1</span>
+        </div>
+        <button id="install-btn" class="btn-outline btn-sm hidden" onclick="handleInstall()">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Install
+        </button>
+        <button id="signin-btn" class="google-btn-sm hidden" onclick="signInWithGoogle()">
+          <svg viewBox="0 0 24 24" width="14" height="14"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Sign In
+        </button>
+        <div id="user-badge" class="user-badge hidden"></div>
+      </div>
+    </div>
+    <nav class="mobile-nav" id="mobile-nav"></nav>
+  </header>
+
+  <main class="app-main">
+    <section class="page" id="page-today"></section>
+    <section class="page hidden" id="page-entries"></section>
+    <section class="page hidden" id="page-view"></section>
+    <section class="page hidden" id="page-money"></section>
+    <section class="page hidden" id="page-fitness"></section>
+    <section class="page hidden" id="page-time"></section>
+  </main>
+</div>
+
+<!-- ============ LIGHTBOX ============ -->
+<div id="lightbox" class="lightbox hidden" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()"/>
+</div>
+
+<!-- ============ GENERIC MODAL ============ -->
+<div id="modal-backdrop" class="modal-backdrop hidden" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="modal-title"></h3>
+      <button class="icon-btn" onclick="closeModal()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="modal-body" class="modal-body"></div>
+    <div id="modal-footer" class="modal-footer"></div>
+  </div>
+</div>
+
+<!-- ============ HOBBY MANAGE MODAL ============ -->
+<div id="hobby-modal" class="modal-backdrop hidden" onclick="closeHobbyModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Manage Hobbies</h3>
+      <button class="icon-btn" onclick="closeHobbyModal()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div id="hobby-modal-list"></div>
+      <div class="hobby-add-form">
+        <input class="hobby-emoji-inp" id="hobby-emoji-inp" placeholder="🎯" maxlength="2"/>
+        <input class="hobby-name-inp" id="hobby-name-inp" placeholder="Hobby name…"/>
+        <button class="btn-primary btn-sm" onclick="addHobby()">Add</button>
+      </div>
+      <span class="hobby-modal-note">Removed hobbies won't appear today but all past entries are kept.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TODO ADD MODAL ============ -->
+<div id="todo-modal" class="modal-backdrop hidden" onclick="closeTodoModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Add Quest</h3>
+      <button class="icon-btn" onclick="closeTodoModal()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input id="todo-inp" class="todo-text-inp" placeholder="What do you need to do?" autofocus/>
+      <div class="todo-tag-row">
+        <button class="tag-opt tag-work"     onclick="selectTodoTag('work',this)">Work</button>
+        <button class="tag-opt tag-health"   onclick="selectTodoTag('health',this)">Health</button>
+        <button class="tag-opt tag-personal" onclick="selectTodoTag('personal',this)">Personal</button>
+        <button class="tag-opt tag-urgent"   onclick="selectTodoTag('urgent',this)">Urgent</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-outline btn-sm" onclick="closeTodoModal()">Cancel</button>
+      <button class="btn-primary btn-sm" onclick="addTodo()">Add Quest</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MONEY SOURCES MODAL ============ -->
+<div id="sources-modal" class="modal-backdrop hidden" onclick="closeSourcesModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Manage Income Sources</h3>
+      <button class="icon-btn" onclick="closeSourcesModal()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div id="sources-modal-list"></div>
+      <div class="hobby-add-form">
+        <input class="src-emoji-inp" id="src-emoji-inp" placeholder="💰" maxlength="2"/>
+        <input class="src-name-inp"  id="src-name-inp"  placeholder="Source name…"/>
+        <button class="btn-primary btn-sm" onclick="addMoneySource()">Add</button>
+      </div>
+      <span class="hobby-modal-note">Removed sources won't show in new entries but history is preserved.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FITNESS MANAGE MODAL ============ -->
+<div id="fitness-modal" class="modal-backdrop hidden" onclick="closeFitnessModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Manage Fitness Activities</h3>
+      <button class="icon-btn" onclick="closeFitnessModal()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div id="fitness-modal-list"></div>
+      <div class="hobby-add-form">
+        <input class="fit-emoji-inp" id="fit-emoji-inp" placeholder="💪" maxlength="2"/>
+        <input class="fit-name-inp"  id="fit-name-inp"  placeholder="Activity name…"/>
+        <button class="btn-primary btn-sm" onclick="addFitnessItem()">Add</button>
+      </div>
+      <span class="hobby-modal-note">Removed activities won't show today but logs are kept.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div id="toast" class="toast hidden"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

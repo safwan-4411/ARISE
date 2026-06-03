@@ -1,0 +1,13 @@
+{
+  "name": "ARISE — Daily Journal",
+  "short_name": "ARISE",
+  "description": "Your private daily journal with habits, fitness, money & time tracking",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#080C14",
+  "theme_color": "#080C14",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
