@@ -1,7 +1,5 @@
-// Replace these values with your actual Supabase project credentials
-// Get them from: https://supabase.com → Your Project → Settings → API
+// ============ ARISE SUPABASE CONFIG ============
 window.JRNL_SUPABASE = {
-  url:  'YOUR_SUPABASE_URL',   // e.g. https://xxxx.supabase.co
-  anon: 'YOUR_ANON_KEY'        // starts with eyJ...
+  url:  "https://tulfelapbujixfcuaoyv.supabase.co",
+  anon: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1bGZlbGFwYnVqaXhmY3Vhb3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4OTAyNDIsImV4cCI6MjA5MzQ2NjI0Mn0.yOCrfdegJ8J8-zbe0sxkbItay86h-Rxy2TIeWcx0CSA",
 };
-// If you don't have Supabase, leave as-is — the app works fully offline with localStorage.
