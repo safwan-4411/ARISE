@@ -11,9 +11,44 @@ function initSupabase() {
 
 /* ── PWA ── */
 let deferredInstall = null;
-window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; document.getElementById('install-btn')?.classList.remove('hidden'); });
-window.addEventListener('appinstalled', () => { deferredInstall = null; document.getElementById('install-btn')?.classList.add('hidden'); });
-function handleInstall() { if (!deferredInstall) return; deferredInstall.prompt(); deferredInstall.userChoice.then(()=>{ deferredInstall=null; }); }
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstall = e;
+  const btn = document.getElementById('install-btn');
+  if(btn) btn.style.display = 'inline-flex';
+});
+window.addEventListener('appinstalled', () => {
+  deferredInstall = null;
+  const btn = document.getElementById('install-btn');
+  if(btn) btn.style.display = 'none';
+  showToast('ARISE installed successfully!');
+});
+function handleInstall() {
+  if (!deferredInstall) {
+    // Fallback: show instructions
+    showToast('Tap browser menu → Add to Home Screen');
+    return;
+  }
+  deferredInstall.prompt();
+  deferredInstall.userChoice.then(choice => {
+    if(choice.outcome === 'accepted') showToast('Installing ARISE...');
+    deferredInstall = null;
+    const btn = document.getElementById('install-btn');
+    if(btn) btn.style.display = 'none';
+  });
+}
+// Show install btn on mobile browsers that support it
+window.addEventListener('load', () => {
+  const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if(isMobile && !isStandalone) {
+    // Show after 3 seconds if beforeinstallprompt hasn't fired
+    setTimeout(() => {
+      const btn = document.getElementById('install-btn');
+      if(btn && btn.style.display === 'none') btn.style.display = 'inline-flex';
+    }, 3000);
+  }
+});
 
 /* ── STORAGE ── */
 const LS_KEY='arise_entries', LS_TODOS='arise_todos', LS_HOBBIES='arise_hobbies',
