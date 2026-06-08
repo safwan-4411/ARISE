@@ -17,6 +17,21 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300D4FF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='13 2 3 14 12 14 11 22 21 10 12 10 13 2'/%3E%3C/svg%3E"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="supabase-config.js"></script>
+<style>
+.btn-install{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:7px 14px;border-radius:5px;
+  background:linear-gradient(135deg,#005577,#0099CC);
+  border:1px solid rgba(0,212,255,0.4);
+  color:#E8F8FF;font-size:12px;font-weight:700;
+  font-family:'Rajdhani',sans-serif;letter-spacing:0.08em;
+  text-transform:uppercase;cursor:pointer;
+  box-shadow:0 0 12px rgba(0,212,255,0.2);
+  animation:glow-pulse 2s infinite;
+}
+.btn-install svg{width:13px;height:13px;flex-shrink:0}
+@keyframes glow-pulse{0%,100%{box-shadow:0 0 8px rgba(0,212,255,0.2)}50%{box-shadow:0 0 18px rgba(0,212,255,0.5)}}
+</style>
 </head>
 <body>
 
@@ -38,7 +53,7 @@
           <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           <span id="xp-text">LVL 1</span>
         </div>
-        <button id="install-btn" class="btn-outline btn-sm hidden" onclick="handleInstall()">
+        <button id="install-btn" class="btn-install" onclick="handleInstall()" style="display:none">
           <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Install
         </button>
